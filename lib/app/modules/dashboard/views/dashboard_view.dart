@@ -15,6 +15,7 @@ import '../../home/views/home_view.dart';
 import '../../menu/views/menu_view.dart';
 import '../../offer/views/offer_view.dart';
 import '../../profile/views/profile_view.dart';
+import '../controllers/nav_bar_controller.dart';
 import '../widget/nav_bar_item.dart';
 
 class DashboardView extends StatefulWidget {
@@ -25,6 +26,7 @@ class DashboardView extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardView> {
   final box = GetStorage();
+  final navBarController = Get.put(NavBarController());
   PageController? pageController;
   int pageIndex = 0;
   List<Widget>? screens;
@@ -99,85 +101,102 @@ class _DashboardScreenState extends State<DashboardView> {
               _setPage(2);
             },
             child: GetBuilder<CartController>(
-              builder:
-                  (cartController) => Stack(
-                    children: [
-                      SizedBox(
-                        height: 60.h,
-                        width: 60.w,
-                        child: CircleAvatar(
-                          backgroundColor: AppColor.primaryColor,
-                          child: ImageIcon(
-                            AssetImage(Images.cart),
-                            color: Colors.white,
-                            size: 30.sp,
-                          ),
-                        ),
+              builder: (cartController) => Stack(
+                children: [
+                  SizedBox(
+                    height: 60.h,
+                    width: 60.w,
+                    child: CircleAvatar(
+                      backgroundColor: AppColor.primaryColor,
+                      child: ImageIcon(
+                        AssetImage(Images.cart),
+                        color: Colors.white,
+                        size: 30.sp,
                       ),
-                      cartController.cart.isNotEmpty
-                          ? Positioned(
-                            top: 8.h,
-                            right: 8.w,
-                            child: SizedBox(
-                              child: ImageIcon(
-                                AssetImage(Images.cartHasItem),
-                                color: Colors.yellow,
-                                size: 12.sp,
-                              ),
-                            ),
-                          )
-                          : const SizedBox(),
-                    ],
+                    ),
                   ),
+                  cartController.cart.isNotEmpty
+                      ? Positioned(
+                          top: 8.h,
+                          right: 8.w,
+                          child: SizedBox(
+                            child: ImageIcon(
+                              AssetImage(Images.cartHasItem),
+                              color: Colors.yellow,
+                              size: 12.sp,
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
+                ],
+              ),
             ),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: BottomAppBar(
-          elevation: 5,
-          notchMargin: 5,
-          color: Colors.white,
-          clipBehavior: Clip.antiAlias,
-          shape: CircularNotchedRectangle(),
-          child: Row(
-            children: [
-              BottomNavItem(
-                tittle: "HOME".tr,
-                imageData: AssetImage(Images.home),
-                isSelected: pageIndex == 0,
-                onTap: () => _setPage(0),
+        bottomNavigationBar: Obx(
+          () => AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            height: navBarController.isVisible.value
+                ? kBottomNavigationBarHeight
+                : 0,
+            child: BottomAppBar(
+              elevation: 5,
+              notchMargin: 5,
+              color: Colors.white,
+              clipBehavior: Clip.antiAlias,
+              shape: CircularNotchedRectangle(),
+              child: Row(
+                children: [
+                  BottomNavItem(
+                    tittle: "HOME".tr,
+                    imageData: AssetImage(Images.home),
+                    isSelected: pageIndex == 0,
+                    onTap: () => _setPage(0),
+                  ),
+                  BottomNavItem(
+                    tittle: "MENU".tr,
+                    imageData: AssetImage(Images.menu),
+                    isSelected: pageIndex == 1,
+                    onTap: () => _setPage(1),
+                  ),
+                  Expanded(child: SizedBox()),
+                  BottomNavItem(
+                    tittle: "OFFERS".tr,
+                    imageData: AssetImage(Images.offer),
+                    isSelected: pageIndex == 3,
+                    onTap: () => _setPage(3),
+                  ),
+                  BottomNavItem(
+                    tittle: "PROFILE".tr,
+                    imageData: AssetImage(Images.profile_circle),
+                    isSelected: pageIndex == 4,
+                    onTap: () {
+                      _setPage(4);
+                    },
+                  ),
+                ],
               ),
-              BottomNavItem(
-                tittle: "MENU".tr,
-                imageData: AssetImage(Images.menu),
-                isSelected: pageIndex == 1,
-                onTap: () => _setPage(1),
-              ),
-              Expanded(child: SizedBox()),
-              BottomNavItem(
-                tittle: "OFFERS".tr,
-                imageData: AssetImage(Images.offer),
-                isSelected: pageIndex == 3,
-                onTap: () => _setPage(3),
-              ),
-              BottomNavItem(
-                tittle: "PROFILE".tr,
-                imageData: AssetImage(Images.profile_circle),
-                isSelected: pageIndex == 4,
-                onTap: () {
-                  _setPage(4);
-                },
-              ),
-            ],
+            ),
           ),
         ),
-        body: PageView.builder(
-          controller: pageController,
-          itemCount: screens!.length,
-          physics: NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return screens![index];
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (ScrollNotification scrollNotification) {
+            if (scrollNotification is ScrollUpdateNotification) {
+              navBarController.updateVisibility(
+                scrollNotification.metrics.pixels,
+              );
+            }
+            return false;
           },
+          child: PageView.builder(
+            controller: pageController,
+            itemCount: screens!.length,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return screens![index];
+            },
+          ),
         ),
       ),
     );
