@@ -133,49 +133,53 @@ class _DashboardScreenState extends State<DashboardView> {
             ),
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: Obx(
-          () => AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            height: navBarController.isVisible.value
-                ? kBottomNavigationBarHeight
-                : 0,
-            child: BottomAppBar(
-              elevation: 5,
-              notchMargin: 5,
-              color: Colors.white,
-              clipBehavior: Clip.antiAlias,
-              shape: CircularNotchedRectangle(),
-              child: Row(
-                children: [
-                  BottomNavItem(
-                    tittle: "HOME".tr,
-                    imageData: AssetImage(Images.home),
-                    isSelected: pageIndex == 0,
-                    onTap: () => _setPage(0),
-                  ),
-                  BottomNavItem(
-                    tittle: "MENU".tr,
-                    imageData: AssetImage(Images.menu),
-                    isSelected: pageIndex == 1,
-                    onTap: () => _setPage(1),
-                  ),
-                  Expanded(child: SizedBox()),
-                  BottomNavItem(
-                    tittle: "OFFERS".tr,
-                    imageData: AssetImage(Images.offer),
-                    isSelected: pageIndex == 3,
-                    onTap: () => _setPage(3),
-                  ),
-                  BottomNavItem(
-                    tittle: "PROFILE".tr,
-                    imageData: AssetImage(Images.profile_circle),
-                    isSelected: pageIndex == 4,
-                    onTap: () {
-                      _setPage(4);
-                    },
-                  ),
-                ],
+          () => Visibility(
+            visible: navBarController.isVisible.value,
+            maintainSize: false,
+            maintainAnimation: true,
+            maintainState: true,
+            child: AnimatedOpacity(
+              duration: Duration(milliseconds: 300),
+              opacity: navBarController.isVisible.value ? 1.0 : 0.0,
+              child: BottomAppBar(
+                elevation: 5,
+                notchMargin: 5,
+                color: Colors.white,
+                clipBehavior: Clip.antiAlias,
+                shape: CircularNotchedRectangle(),
+                child: Row(
+                  children: [
+                    BottomNavItem(
+                      tittle: "HOME".tr,
+                      imageData: AssetImage(Images.home),
+                      isSelected: pageIndex == 0,
+                      onTap: () => _setPage(0),
+                    ),
+                    BottomNavItem(
+                      tittle: "MENU".tr,
+                      imageData: AssetImage(Images.menu),
+                      isSelected: pageIndex == 1,
+                      onTap: () => _setPage(1),
+                    ),
+                    Expanded(child: SizedBox()),
+                    BottomNavItem(
+                      tittle: "OFFERS".tr,
+                      imageData: AssetImage(Images.offer),
+                      isSelected: pageIndex == 3,
+                      onTap: () => _setPage(3),
+                    ),
+                    BottomNavItem(
+                      tittle: "PROFILE".tr,
+                      imageData: AssetImage(Images.profile_circle),
+                      isSelected: pageIndex == 4,
+                      onTap: () {
+                        _setPage(4);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
