@@ -9,12 +9,14 @@ class SearchController extends GetxController {
   List<ItemData> foundItem = [];
   List<ItemData> results = [];
 
+  RxList<String> suggestionCategories = <String>[].obs;
+
   bool itemLoader = false;
 
   @override
   void onInit() {
     super.onInit();
-    getData();
+    Future.microtask(() => getData());
   }
 
   getData() {
@@ -24,6 +26,11 @@ class SearchController extends GetxController {
     update();
     searchDataList = homeController.itemDataList;
     results = searchDataList;
+
+    suggestionCategories.value = searchDataList
+        .map((item) => item.name.toString())
+        .toSet()
+        .toList();
     itemLoader = false;
     update();
   }
@@ -31,16 +38,17 @@ class SearchController extends GetxController {
   filterItem(String itemName) async {
     itemLoader = true;
     update();
-    getData();
+    // getData();
     if (itemName.isEmpty) {
       results = searchDataList;
-      update();
+      // update();
     } else {
       results = searchDataList
-          .where((element) => element.name
-              .toString()
-              .toLowerCase()
-              .contains(itemName.toLowerCase()))
+          .where(
+            (element) => element.name.toString().toLowerCase().contains(
+              itemName.toLowerCase(),
+            ),
+          )
           .toList();
     }
     foundItem = results;
