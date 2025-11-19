@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:foodking/app/modules/profile/views/profile_view.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:shimmer/shimmer.dart';
@@ -62,6 +63,14 @@ class _HomeViewState extends State<HomeView> {
                 centerTitle: false,
                 elevation: 0,
                 backgroundColor: Colors.white,
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      Get.to(() => const ProfileView());
+                    },
+                    icon: Icon(Icons.person, color: AppColor.gray, size: 24.sp),
+                  ),
+                ],
               ),
               body: GetBuilder<HomeController>(
                 builder: (homeController) => Stack(
@@ -128,7 +137,7 @@ class _HomeViewState extends State<HomeView> {
                                             Radius.circular(12.r),
                                           ),
                                           borderSide: BorderSide(
-                                            color: AppColor.itembg,
+                                            color: AppColor.primaryColor,
                                             width: 1.w,
                                           ),
                                         ),

@@ -58,7 +58,7 @@ class _SearchViewState extends State<SearchView> {
           ),
           centerTitle: false,
           elevation: 0,
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.grey[50],
           leading: IconButton(
             icon: SvgPicture.asset(
               Images.back,
