@@ -85,6 +85,7 @@ class _HomeViewState extends State<HomeView> {
 
                         return SliverAppBar(
                           pinned: true,
+                          expandedHeight: 280.h,
                           backgroundColor: bgColor,
                           elevation: 0,
                           leadingWidth: 100.w,
@@ -104,7 +105,109 @@ class _HomeViewState extends State<HomeView> {
                               ),
                             ),
                           ],
-                          flexibleSpace: const SizedBox.shrink(),
+                          flexibleSpace: FlexibleSpaceBar(
+                            collapseMode: CollapseMode.parallax,
+                            background: Padding(
+                              padding: EdgeInsets.only(
+                                left: 16.w,
+                                right: 16.w,
+                                top: 70.h,
+                              ),
+                              child: Column(
+                                children: [
+                                  // Search TextField
+                                  SizedBox(
+                                    child: homeController.loader
+                                        ? Shimmer.fromColors(
+                                            baseColor: Colors.grey[200]!,
+                                            highlightColor: Colors.grey[300]!,
+                                            child: Container(
+                                              height: 52.h,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(16.r),
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          )
+                                        : SizedBox(
+                                            child: TextField(
+                                              showCursor: true,
+                                              readOnly: true,
+                                              onTap: () {
+                                                Get.to(
+                                                  () => const SearchView(),
+                                                );
+                                              },
+                                              decoration: InputDecoration(
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                      horizontal: 0.w,
+                                                      vertical: 0.h,
+                                                    ),
+                                                hintText: "",
+                                                label: AnimatedHint(),
+                                                floatingLabelBehavior:
+                                                    FloatingLabelBehavior.never,
+                                                prefixIcon: SizedBox(
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(
+                                                      12.r,
+                                                    ),
+                                                    child: SvgPicture.asset(
+                                                      Images.iconSearch,
+                                                      fit: BoxFit.cover,
+                                                      color: AppColor.gray,
+                                                      height: 16.h,
+                                                      width: 16.w,
+                                                    ),
+                                                  ),
+                                                ),
+                                                filled: true,
+                                                fillColor: AppColor.itembg,
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                            Radius.circular(
+                                                              12.r,
+                                                            ),
+                                                          ),
+                                                      borderSide: BorderSide(
+                                                        color: AppColor
+                                                            .primaryColor,
+                                                        width: 1.w,
+                                                      ),
+                                                    ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                            Radius.circular(
+                                                              12.r,
+                                                            ),
+                                                          ),
+                                                      borderSide: BorderSide(
+                                                        width: 0.w,
+                                                        color: AppColor.itembg,
+                                                      ),
+                                                    ),
+                                              ),
+                                            ),
+                                          ),
+                                  ),
+                                  SizedBox(height: 14.h),
+                                  // Category Selector
+                                  homeController.menuLoader ||
+                                          homeController
+                                              .categoryDataList
+                                              .isEmpty
+                                      ? menuSectionShimmer()
+                                      : homeMenuSection(),
+                                ],
+                              ),
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -123,80 +226,8 @@ class _HomeViewState extends State<HomeView> {
                               ),
                         child: Column(
                           children: [
-                            SizedBox(
-                              child: homeController.loader
-                                  ? Shimmer.fromColors(
-                                      baseColor: Colors.grey[200]!,
-                                      highlightColor: Colors.grey[300]!,
-                                      child: Container(
-                                        height: 52.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            16.r,
-                                          ),
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    )
-                                  : SizedBox(
-                                      child: TextField(
-                                        showCursor: true,
-                                        readOnly: true,
-                                        onTap: () {
-                                          Get.to(() => const SearchView());
-                                        },
-                                        decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 0.w,
-                                            vertical: 0.h,
-                                          ),
-                                          hintText: "",
-                                          label: AnimatedHint(),
-                                          floatingLabelBehavior:
-                                              FloatingLabelBehavior.never,
-                                          prefixIcon: SizedBox(
-                                            child: Padding(
-                                              padding: EdgeInsets.all(12.r),
-                                              child: SvgPicture.asset(
-                                                Images.iconSearch,
-                                                fit: BoxFit.cover,
-                                                color: AppColor.gray,
-                                                height: 16.h,
-                                                width: 16.w,
-                                              ),
-                                            ),
-                                          ),
-                                          filled: true,
-                                          fillColor: AppColor.itembg,
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(12.r),
-                                            ),
-                                            borderSide: BorderSide(
-                                              color: AppColor.primaryColor,
-                                              width: 1.w,
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(12.r),
-                                            ),
-                                            borderSide: BorderSide(
-                                              width: 0.w,
-                                              color: AppColor.itembg,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                            SizedBox(height: 14.h),
                             Column(
                               children: [
-                                homeController.menuLoader ||
-                                        homeController.categoryDataList.isEmpty
-                                    ? menuSectionShimmer()
-                                    : homeMenuSection(),
                                 homeController.featuredLoader ||
                                         homeController
                                             .featuredItemDataList
