@@ -71,45 +71,42 @@ class _HomeViewState extends State<HomeView> {
                   physics: const BouncingScrollPhysics(),
                   slivers: [
                     // SliverAppBar that changes color according to selected category
-                    SliverToBoxAdapter(
-                      child: GetBuilder<MenuuController>(
-                        builder: (menuController) {
-                          final bool hasCategory =
-                              menuController.categoryDataList.isNotEmpty;
-                          final Color bgColor = hasCategory
-                              ? categoryColors[menuController.currentIndex %
-                                    categoryColors.length]
-                              : Colors.white;
-                          final Color iconColor =
-                              bgColor.computeLuminance() < 0.5
-                              ? Colors.white
-                              : AppColor.fontColor;
+                    GetBuilder<MenuuController>(
+                      builder: (menuController) {
+                        final bool hasCategory =
+                            menuController.categoryDataList.isNotEmpty;
+                        final Color bgColor = hasCategory
+                            ? categoryColors[menuController.currentIndex %
+                                  categoryColors.length]
+                            : Colors.white;
+                        final Color iconColor = bgColor.computeLuminance() < 0.5
+                            ? Colors.white
+                            : AppColor.fontColor;
 
-                          return SliverAppBar(
-                            pinned: true,
-                            backgroundColor: bgColor,
-                            elevation: 0,
-                            leadingWidth: 100.w,
-                            leading: Padding(
-                              padding: EdgeInsets.only(left: 16.w, right: 16.w),
-                              child: Image.asset(Images.logo, width: 85.w),
-                            ),
-                            actions: [
-                              IconButton(
-                                onPressed: () {
-                                  Get.to(() => const ProfileView());
-                                },
-                                icon: Icon(
-                                  Icons.person,
-                                  color: iconColor,
-                                  size: 24.sp,
-                                ),
+                        return SliverAppBar(
+                          pinned: true,
+                          backgroundColor: bgColor,
+                          elevation: 0,
+                          leadingWidth: 100.w,
+                          leading: Padding(
+                            padding: EdgeInsets.only(left: 16.w, right: 16.w),
+                            child: Image.asset(Images.logo, width: 85.w),
+                          ),
+                          actions: [
+                            IconButton(
+                              onPressed: () {
+                                Get.to(() => const ProfileView());
+                              },
+                              icon: Icon(
+                                Icons.person,
+                                color: iconColor,
+                                size: 24.sp,
                               ),
-                            ],
-                            flexibleSpace: const SizedBox.shrink(),
-                          );
-                        },
-                      ),
+                            ),
+                          ],
+                          flexibleSpace: const SizedBox.shrink(),
+                        );
+                      },
                     ),
 
                     // Main content
