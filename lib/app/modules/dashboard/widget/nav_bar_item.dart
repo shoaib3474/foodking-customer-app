@@ -39,13 +39,14 @@ class BottomNavItem extends StatelessWidget {
                             color: AppColor.primaryColor.withOpacity(0.18),
                             blurRadius: 8.r,
                             spreadRadius: 1.r,
-                          )
+                          ),
                         ]
                       : [],
                   border: Border.all(
-                      color: isSelected
-                          ? AppColor.primaryColor
-                          : Colors.transparent),
+                    color: isSelected
+                        ? AppColor.primaryColor
+                        : Colors.transparent,
+                  ),
                 ),
                 child: Center(
                   child: ImageIcon(
