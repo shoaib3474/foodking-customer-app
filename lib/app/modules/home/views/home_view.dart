@@ -13,79 +13,10 @@ import '../../search/controllers/animated_hint_controller.dart';
 import '../../offer/controllers/offer_controller.dart';
 import '../../menu/controllers/menu_controller.dart';
 import '../../search/views/search_view.dart';
-import '../widget/category_selector_widget.dart';
-import '../controllers/home_controller.dart';
-import '../../search/widgets/animated_hint_widget.dart';
-import '../widget/active_order_status.dart';
-import '../widget/featured_item_section.dart';
-import '../widget/home_menu_section.dart';
-import '../widget/home_offer_section.dart';
-import '../widget/home_vew_shimmer.dart';
-import '../widget/popular_item_section.dart';
-
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
-  @override
-  State<HomeView> createState() => _HomeViewState();
-}
-
-class _HomeViewState extends State<HomeView> {
-  final box = GetStorage();
-  @override
-  void initState() {
-    Get.put(AnimatedHintController());
-    Future.delayed(Duration.zero, () {
-      Get.find<HomeController>().getBranchList();
-      Get.find<HomeController>().getCategoryList();
-      Get.find<HomeController>().getPopularItemDataList();
-      Get.find<HomeController>().getFeaturedItemDataList();
-      Get.find<OfferController>().getOfferList();
-
-      if (box.read('isLogedIn') == true) {
-        Get.find<HomeController>().getActiveOrderList();
-      }
-    });
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: GetBuilder<HomeController>(
-        builder: (homeController) {
-          return Stack(
-            children: [
-              // Use RefreshIndicator over the whole scrollable
-              RefreshIndicator(
-                color: AppColor.primaryColor,
-                onRefresh: () async {
-                  homeController.getBranchList();
-                  homeController.getCategoryList();
-                  homeController.getFeaturedItemDataList();
-                  homeController.getPopularItemDataList();
-                  if (box.read('isLogedIn') == true) {
-                    homeController.getActiveOrderList();
-                  }
-                },
-                child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    // SliverAppBar that changes color according to selected category
-                    GetBuilder<MenuuController>(
-                      builder: (menuController) {
-                        final bool hasCategory =
-                            menuController.categoryDataList.isNotEmpty;
-                        final Color bgColor = hasCategory
-                            ? categoryColors[menuController.currentIndex %
-                                  categoryColors.length]
-                            : Colors.white;
-                        final Color iconColor = bgColor.computeLuminance() < 0.5
-                            ? Colors.white
-                            : AppColor.fontColor;
-
                         return SliverAppBar(
                           pinned: true,
-                          expandedHeight: 280.h,
+                          // toolbar + bottom heights
+                          expandedHeight: kToolbarHeight + 200.h,
                           backgroundColor: bgColor,
                           elevation: 0,
                           leadingWidth: 100.w,
@@ -105,22 +36,20 @@ class _HomeViewState extends State<HomeView> {
                               ),
                             ),
                           ],
-                          flexibleSpace: FlexibleSpaceBar(
-                            collapseMode: CollapseMode.parallax,
-                            background: Padding(
+                          bottom: PreferredSize(
+                            preferredSize: Size.fromHeight(200.h),
+                            child: Padding(
                               padding: EdgeInsets.only(
-                                left: 16.w,
-                                right: 16.w,
-                                top: 70.h,
-                              ),
+                                  left: 16.w, right: 16.w, bottom: 12.h, top: 8.h),
                               child: Column(
                                 children: [
-                                  // Search TextField
+                                  // Search TextField (stays visible when pinned)
                                   SizedBox(
                                     child: homeController.loader
                                         ? Shimmer.fromColors(
                                             baseColor: Colors.grey[200]!,
-                                            highlightColor: Colors.grey[300]!,
+                                            highlightColor:
+                                                Colors.grey[300]!,
                                             child: Container(
                                               height: 52.h,
                                               decoration: BoxDecoration(
@@ -134,6 +63,75 @@ class _HomeViewState extends State<HomeView> {
                                             child: TextField(
                                               showCursor: true,
                                               readOnly: true,
+                                              onTap: () {
+                                                Get.to(() => const SearchView());
+                                              },
+                                              decoration: InputDecoration(
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                  horizontal: 0.w,
+                                                  vertical: 0.h,
+                                                ),
+                                                hintText: "",
+                                                label: AnimatedHint(),
+                                                floatingLabelBehavior:
+                                                    FloatingLabelBehavior.never,
+                                                prefixIcon: SizedBox(
+                                                  child: Padding(
+                                                    padding:
+                                                        EdgeInsets.all(12.r),
+                                                    child: SvgPicture.asset(
+                                                      Images.iconSearch,
+                                                      fit: BoxFit.cover,
+                                                      color: AppColor.gray,
+                                                      height: 16.h,
+                                                      width: 16.w,
+                                                    ),
+                                                  ),
+                                                ),
+                                                filled: true,
+                                                fillColor: AppColor.itembg,
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(12.r),
+                                                  ),
+                                                  borderSide: BorderSide(
+                                                    color:
+                                                        AppColor.primaryColor,
+                                                    width: 1.w,
+                                                  ),
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(12.r),
+                                                  ),
+                                                  borderSide: BorderSide(
+                                                    width: 0.w,
+                                                    color: AppColor.itembg,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                  ),
+                                  SizedBox(height: 14.h),
+                                  // Category Selector (stays visible when pinned)
+                                  homeController.menuLoader ||
+                                          homeController
+                                              .categoryDataList.isEmpty
+                                      ? menuSectionShimmer()
+                                      : homeMenuSection(),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                                               onTap: () {
                                                 Get.to(
                                                   () => const SearchView(),
