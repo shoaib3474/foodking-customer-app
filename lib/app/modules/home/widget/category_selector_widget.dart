@@ -7,7 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../util/constant.dart';
 import '../../../../util/style.dart';
 import '../../menu/controllers/menu_controller.dart';
-import '../../menu/views/menu_view.dart';
+// navigation to MenuView removed — loading categories inline
 
 // Color scheme for different categories
 final List<Color> categoryColors = [
@@ -48,7 +48,16 @@ class _CategorySelectorWidgetState extends State<CategorySelectorWidget> {
               Text("OUR_MENU".tr, style: fontBold),
               InkWell(
                 onTap: () {
-                  Get.to(() => MenuView(fromHome: true, categoryId: 0));
+                  // Load first category inline instead of navigating
+                  try {
+                    menuController.getCategoryWiseItemDataList(
+                      menuController.categoryDataList[0].slug!,
+                    );
+                    menuController.setCategoryIndex(0);
+                    menuController.fromHome = true;
+                    menuController.currentIndex = 0;
+                    (context as Element).markNeedsBuild();
+                  } catch (_) {}
                 },
                 child: Container(
                   alignment: Alignment.center,
@@ -81,10 +90,16 @@ class _CategorySelectorWidgetState extends State<CategorySelectorWidget> {
                               setState(() {
                                 selectedCategoryIndex = index;
                               });
-                              Get.to(
-                                () =>
-                                    MenuView(fromHome: true, categoryId: index),
-                              );
+                              // Load selected category inline instead of navigating
+                              try {
+                                menuController.getCategoryWiseItemDataList(
+                                  menuController.categoryDataList[index].slug!,
+                                );
+                                menuController.setCategoryIndex(index);
+                                menuController.fromHome = true;
+                                menuController.currentIndex = index;
+                                (context as Element).markNeedsBuild();
+                              } catch (_) {}
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
