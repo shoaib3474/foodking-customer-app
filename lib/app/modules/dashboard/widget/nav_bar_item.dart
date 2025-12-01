@@ -22,27 +22,36 @@ class BottomNavItem extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.h),
+          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ImageIcon(
-                imageData,
-                color: isSelected
-                    ? AppColor.primaryColor
-                    // ignore: deprecated_member_use
-                    : Theme.of(context).disabledColor.withOpacity(0.8),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 4.h, bottom: 2.h),
-                child: Text(
-                  tittle!,
-                  maxLines: 1,
-                  style: TextStyle(
-                    fontFamily: 'Rubik',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
+              Container(
+                height: isSelected ? 44.h : 36.h,
+                width: isSelected ? 44.w : 36.w,
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColor.primaryColor : Colors.white,
+                  borderRadius: BorderRadius.circular(12.r),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: AppColor.primaryColor.withOpacity(0.18),
+                            blurRadius: 8.r,
+                            spreadRadius: 1.r,
+                          )
+                        ]
+                      : [],
+                  border: Border.all(
+                      color: isSelected
+                          ? AppColor.primaryColor
+                          : Colors.transparent),
+                ),
+                child: Center(
+                  child: ImageIcon(
+                    imageData,
+                    color: isSelected ? Colors.white : AppColor.fontColor,
+                    size: isSelected ? 22.sp : 20.sp,
                   ),
                 ),
               ),

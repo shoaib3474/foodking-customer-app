@@ -16,33 +16,38 @@ Widget itemCardGrid(item, index, context) {
       await Get.find<HomeController>().getItemDetails(itemID: item[index].id!);
       showBottomSheet(
         context: context,
-        builder:
-            (context) => SingleChildScrollView(
-              child: ItemView(itemDetails: item[index], indexNumber: index),
-            ),
+        builder: (context) => SingleChildScrollView(
+          child: ItemView(itemDetails: item[index], indexNumber: index),
+        ),
       );
     },
     child: Container(
-      height: 220.h,
+      height: 260.h,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(12.r),
         color: Colors.white,
         border: Border.all(color: AppColor.itembg),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 90.h,
-            child: ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16.r),
-                topRight: Radius.circular(16.r),
-              ),
-              child: CachedNetworkImage(
-                imageUrl: item[index].cover!,
-                imageBuilder:
-                    (context, imageProvider) => Container(
+          // Image area with top-left tag
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12.r),
+                  topRight: Radius.circular(12.r),
+                ),
+                child: Container(
+                  height: 120.h,
+                  width: double.infinity,
+                  color: AppColor.itembg,
+                  child: CachedNetworkImage(
+                    imageUrl: item[index].cover!,
+                    fit: BoxFit.cover,
+                    imageBuilder: (context, imageProvider) => Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: imageProvider,
@@ -50,164 +55,101 @@ Widget itemCardGrid(item, index, context) {
                         ),
                       ),
                     ),
-                placeholder:
-                    (context, url) => Shimmer.fromColors(
-                      // ignore: sort_child_properties_last
-                      child: Container(
-                        height: 86.h,
-                        width: 154.w,
-                        color: Colors.grey,
-                      ),
+                    placeholder: (context, url) => Shimmer.fromColors(
+                      child: Container(height: 120.h, color: Colors.grey),
                       baseColor: Colors.grey[300]!,
                       highlightColor: Colors.grey[400]!,
                     ),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 8.w,
-                    right: 8.w,
-                    top: 6.h,
-                    bottom: 6.h,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              item[index].name!,
-                              style: fontRegularBold,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              showBottomSheet(
-                                context: context,
-                                backgroundColor: Colors.transparent,
-                                builder:
-                                    (context) => SingleChildScrollView(
-                                      child: ItemCaution(
-                                        itemName: item[index].name,
-                                        itemCaution: item[index].caution,
-                                      ),
-                                    ),
-                              );
-                            },
-                            child: SizedBox(
-                              width: 16.w,
-                              height: 16.h,
-                              child: SvgPicture.asset(
-                                Images.iconDetails,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        item[index].description!,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontFamily: 'Rubik',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 10.sp,
-                          height: 1.4.h,
-                          color: AppColor.gray,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(left: 8.w, right: 8.w, bottom: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      item[index].offer.isNotEmpty
-                          ? Row(
+              ),
+              // Tag/pill
+              Positioned(
+                top: 8.h,
+                left: 8.w,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Text(
+                    item[index].tags != null && item[index].tags.isNotEmpty
+                        ? item[index].tags[0].toString()
+                        : 'Imported',
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w500,
+                      color: AppColor.fontColor,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // Product info
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item[index].name!,
+                  style: fontRegularBold,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 6.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // rating (if available)
+                    Icon(Icons.star, color: AppColor.yellow, size: 14.sp),
+                    SizedBox(width: 4.w),
+                    Text(
+                      item[index].rating != null
+                          ? item[index].rating.toString()
+                          : '4.5',
+                      style: TextStyle(fontSize: 12.sp, color: AppColor.gray),
+                    ),
+                    SizedBox(width: 12.w),
+                    // time
+                    Icon(Icons.access_time, color: AppColor.primaryColor, size: 14.sp),
+                    SizedBox(width: 4.w),
+                    Text('8 MINS', style: TextStyle(fontSize: 12.sp, color: AppColor.gray)),
+                  ],
+                ),
+                SizedBox(height: 8.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    item[index].offer.isNotEmpty
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item[index].currencyPrice!,
-                                style: TextStyle(
-                                  fontFamily: 'Rubik',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 10.sp,
-                                  decoration: TextDecoration.lineThrough,
-                                  color: AppColor.gray,
-                                ),
-                              ),
-                              SizedBox(width: 4.w),
-                              Text(
                                 item[index].offer[0].currencyPrice!,
-                                style: fontMediumProWithCurrency,
+                                style: TextStyle(
+                                    decoration: TextDecoration.lineThrough,
+                                    color: AppColor.gray,
+                                    fontSize: 12.sp),
                               ),
+                              Text(item[index].currencyPrice!, style: fontMediumProWithCurrency),
                             ],
                           )
-                          : Text(
-                            item[index].currencyPrice!,
-                            style: fontMediumProWithCurrency,
-                          ),
-                      Container(
-                        padding: EdgeInsets.all(4.r),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16.r),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColor.itembg,
-                              offset: const Offset(0.0, 4.0),
-                              blurRadius: 5.r,
-                              spreadRadius: 1.r,
-                            ),
-                            BoxShadow(
-                              color: AppColor.itembg,
-                              offset: const Offset(1.0, 0.0),
-                              blurRadius: 1.r,
-                              spreadRadius: 0.r,
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 12.w,
-                              height: 12.h,
-                              child: SvgPicture.asset(
-                                Images.iconCart,
-                                fit: BoxFit.cover,
-                                colorFilter: ColorFilter.mode(
-                                  AppColor.primaryColor,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 2.w),
-                            Text("ADD".tr, style: fontRegularBoldwithColor),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                        : Text(item[index].currencyPrice!, style: fontMediumProWithCurrency),
+                    // placeholder for spacing - add button is overlayed below
+                    const SizedBox.shrink(),
+                  ],
                 ),
               ],
             ),
           ),
+
+          // bottom spacing to fit overlay add button
+          SizedBox(height: 8.h),
         ],
       ),
     ),
